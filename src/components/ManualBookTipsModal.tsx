@@ -9,7 +9,8 @@ import {
   Zap,
   Key,
   CheckCircle2,
-  Gauge
+  Gauge,
+  Flame
 } from 'lucide-react';
 
 export const ManualBookTipsView: React.FC = () => {
@@ -92,6 +93,17 @@ export const ManualBookTipsView: React.FC = () => {
   ];
 
   const generalTips = [
+    {
+      title: 'Kenapa Ganti Oli Mesin Matic Sebaiknya Tiap 2.000 KM (Bukan 3.000 - 4.000 KM)?',
+      icon: <Flame className="w-5 h-5 text-amber-400" />,
+      color: 'border-amber-500/40 bg-amber-500/10',
+      summary: 'Manual book Bab 10-1 menegaskan jadwal servis harus diperpendek bila beroperasi di iklim panas, berdebu, atau sering macet stop-and-go.',
+      details: [
+        'Jam Kerja Mesin (Engine Running Hours): Saat terjebak macet 1 jam hanya menempuh 3–5 KM, mesin tetap menyala pada 1.500–2.000 RPM. Panas mesin terus membakar pelumas walaupun angka odometer tidak bertambah banyak.',
+        'Kapasitas Oli Motor Matic Sangat Kecil: Rata-rata motor matic 110–125cc (Fazzio, BeAT, Scoopy, Vario) hanya menampung 650 ml – 800 ml oli. Volume oli yang sedikit lebih cepat jenuh arang dan menguap.',
+        'Mencegah Oli Kering & Silinder Baret (Ngejim): Mengganti oli per 2.000 KM atau 2 bulan menjamin volume oli tidak sempat tekor ke level kritis. Biaya ganti oli hanya Rp 45rb - Rp 70rb, sedangkan biaya turun mesin akibat piston baret mencapai Rp 1,5 juta - Rp 2,5 juta!'
+      ]
+    },
     {
       title: 'Kenapa Oli Shock Depan Wajib Ganti Setiap 10.000 KM?',
       icon: <Droplet className="w-5 h-5 text-blue-400" />,

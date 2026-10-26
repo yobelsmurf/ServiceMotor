@@ -1,15 +1,16 @@
-import type { MotorcycleType, ServiceRecommendation, UrgencyLevel } from '../types/motor';
+import type { MotorcycleType, ServiceRecommendation, UrgencyLevel, ServiceItemTemplate } from '../types/motor';
 import { SERVICE_ITEM_TEMPLATES } from '../data/maintenanceSchedules';
 
 export interface CalculationOptions {
   currentKm: number;
   motorcycleType: MotorcycleType;
   hasRadiator: boolean;
+  oilIntervalKm?: number; // 2000 (rekomendasi kondisi macet Indonesia) vs 3000 (standar lab)
   lastServiceHistory?: Record<string, number>; // itemId -> km when last performed
 }
 
 export function calculateMaintenanceRecommendations(options: CalculationOptions): ServiceRecommendation[] {
-  const { currentKm, motorcycleType, hasRadiator, lastServiceHistory = {} } = options;
+  const { currentKm, motorcycleType, hasRadiator, oilIntervalKm = 2000, lastServiceHistory = {} } = options;
 
   // Filter applicable items
   const applicableItems = SERVICE_ITEM_TEMPLATES.filter(item => {
@@ -18,22 +19,34 @@ export function calculateMaintenanceRecommendations(options: CalculationOptions)
     return true;
   });
 
-  const recommendations: ServiceRecommendation[] = applicableItems.map(item => {
+  const recommendations: ServiceRecommendation[] = applicableItems.map(originalItem => {
+    // Override interval for oil if specified
+    const item: ServiceItemTemplate = originalItem.id === 'oli_mesin'
+      ? {
+          ...originalItem,
+          intervalKm: oilIntervalKm,
+          manualBookGuidance: oilIntervalKm === 2000
+            ? 'Mode Intensif Indonesia (2.000 KM): Sesuai Bab 10-1 buku manual, interval diperpendek pada cuaca panas dan lalu lintas stop-and-go untuk mencegah penguapan oli dan menjaga mesin tetap dingin.'
+            : originalItem.manualBookGuidance
+        }
+      : originalItem;
+
     const lastKm = lastServiceHistory[item.id];
     let dueKm: number;
     let kmDifference: number; // currentKm - dueKm (positive means overdue, negative means upcoming)
 
+    const interval = item.intervalKm;
+
     if (lastKm !== undefined && lastKm > 0) {
       // User has custom logged history for this item
-      dueKm = lastKm + item.intervalKm;
+      dueKm = lastKm + interval;
       kmDifference = currentKm - dueKm;
     } else {
       // Standard calculation from 0 km
-      if (currentKm < (item.firstServiceKm || item.intervalKm)) {
-        dueKm = item.firstServiceKm || item.intervalKm;
+      if (currentKm < (item.firstServiceKm || interval)) {
+        dueKm = item.firstServiceKm || interval;
         kmDifference = currentKm - dueKm;
       } else {
-        const interval = item.intervalKm;
         const cycle = Math.floor(currentKm / interval);
         const lastCycleKm = cycle * interval;
         const nextCycleKm = (cycle + 1) * interval;

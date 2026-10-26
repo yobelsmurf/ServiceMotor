@@ -45,11 +45,12 @@ export const OdometerInput: React.FC<OdometerInputProps> = ({ currentKm, setCurr
 
   const presets = [
     { km: 1000, label: '1.000 KM', note: 'Inreyen Perdana' },
-    { km: 4000, label: '4.000 KM', note: 'Servis Rutin' },
-    { km: 8000, label: '8.000 KM', note: 'Gardan & Busi' },
-    { km: 10000, label: '10.000 KM', note: 'Oli Shock & CVT' }, // Specific highlight
-    { km: 16000, label: '16.000 KM', note: 'Filter Udara' },
-    { km: 24000, label: '24.000 KM', note: 'V-Belt & Rantai' },
+    { km: 2000, label: '2.000 KM', note: 'Ganti Oli Rutin' },
+    { km: 4000, label: '4.000 KM', note: 'Servis CVT & Busi' },
+    { km: 8000, label: '8.000 KM', note: 'Gardan & Injektor' },
+    { km: 10000, label: '10.000 KM', note: 'Oli Shock & Komstir' },
+    { km: 15000, label: '15.000 KM', note: 'Filter Udara Fazzio' },
+    { km: 25000, label: '25.000 KM', note: 'Wajib Ganti V-Belt' },
   ];
 
   return (

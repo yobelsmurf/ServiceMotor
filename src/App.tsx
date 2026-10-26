@@ -34,7 +34,8 @@ import {
   Clock,
   CheckCircle2,
   Bike,
-  RotateCcw
+  RotateCcw,
+  Flame
 } from 'lucide-react';
 import './App.css';
 
@@ -51,6 +52,7 @@ export function App() {
   const [customModelName, setCustomModelName] = useState<string>('');
   const [hasRadiator, setHasRadiator] = useState<boolean>(false);
   const [currentKm, setCurrentKm] = useState<number>(10000); // 10.000 KM matches user's prompt!
+  const [oilIntervalKm, setOilIntervalKm] = useState<number>(2000); // 2.000 KM rekomendasi macet/tropis vs 3.000 KM standar lab
 
   // Garage and History persistence
   const [vehicles, setVehicles] = useState<GarageVehicle[]>(() => getStoredVehicles());
@@ -114,9 +116,10 @@ export function App() {
     return calculateMaintenanceRecommendations({
       currentKm,
       motorcycleType: selectedType,
-      hasRadiator
+      hasRadiator,
+      oilIntervalKm
     });
-  }, [currentKm, selectedType, hasRadiator]);
+  }, [currentKm, selectedType, hasRadiator, oilIntervalKm]);
 
   // Active recommendations: Filter out items that the user has already marked as serviced!
   const activeRecommendations = useMemo(() => {
@@ -312,6 +315,104 @@ export function App() {
               setCurrentKm={setCurrentKm}
             />
 
+            {/* Step 4: Riding Condition / Oil Service Interval Selector */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
+                <div>
+                  <span className="text-amber-400 font-bold text-[11px] uppercase tracking-wider block">
+                    Penyesuaian Cuaca & Lalu Lintas (Manual Bab 10-1)
+                  </span>
+                  <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-amber-400" />
+                    <span>Interval Servis Ganti Oli Mesin: {oilIntervalKm.toLocaleString('id-ID')} KM</span>
+                  </h3>
+                </div>
+                <span className="text-[11px] text-slate-400">
+                  Sesuaikan dengan rute & jam operasional motormu
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Mode 2000 KM */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOilIntervalKm(2000);
+                    showToast('Interval oli disetel ke 2.000 KM (Macet & Panas Tropis)');
+                  }}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative ${
+                    oilIntervalKm === 2000
+                      ? 'bg-amber-500/10 border-amber-400 ring-2 ring-amber-400/30'
+                      : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🚦</span>
+                      <span className={`font-bold text-xs sm:text-sm ${oilIntervalKm === 2000 ? 'text-amber-300' : 'text-slate-300'}`}>
+                        Macet Harian / Stop-and-Go
+                      </span>
+                    </div>
+                    <span className={`font-mono font-black text-[11px] px-2 py-0.5 rounded-full ${
+                      oilIntervalKm === 2000
+                        ? 'bg-amber-400 text-slate-950'
+                        : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      2.000 KM
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-snug">
+                    <strong className="text-slate-300">Rekomendasi Indonesia:</strong> Mencegah penguapan oli & mesin overheat saat motor sering berhenti di kemacetan lampu merah.
+                  </p>
+                  {oilIntervalKm === 2000 && (
+                    <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-md w-fit">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Mode Aktif (Disarankan)</span>
+                    </div>
+                  )}
+                </button>
+
+                {/* Mode 3000 KM */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOilIntervalKm(3000);
+                    showToast('Interval oli disetel ke 3.000 KM (Standar Pabrik Normal)');
+                  }}
+                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative ${
+                    oilIntervalKm === 3000
+                      ? 'bg-amber-500/10 border-amber-400 ring-2 ring-amber-400/30'
+                      : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🛣️</span>
+                      <span className={`font-bold text-xs sm:text-sm ${oilIntervalKm === 3000 ? 'text-amber-300' : 'text-slate-300'}`}>
+                        Normal / Luar Kota Lancar
+                      </span>
+                    </div>
+                    <span className={`font-mono font-black text-[11px] px-2 py-0.5 rounded-full ${
+                      oilIntervalKm === 3000
+                        ? 'bg-amber-400 text-slate-950'
+                        : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      3.000 KM
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-snug">
+                    <strong className="text-slate-300">Standar Lab Manual Pabrikan:</strong> Untuk motor yang dipakai di jalan lancar / turing tanpa macet berjam-jam.
+                  </p>
+                  {oilIntervalKm === 3000 && (
+                    <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-md w-fit">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Mode Aktif (Standar Pabrik)</span>
+                    </div>
+                  )}
+                </button>
+              </div>
+            </div>
+
             {/* Financial & Urgency Summary (Calculated on active un-serviced items) */}
             <CostSummary
               recommendations={activeRecommendations}
@@ -426,6 +527,7 @@ export function App() {
             <GarageView
               vehicles={vehicles}
               activeVehicleId={activeVehicleIdState}
+              oilIntervalKm={oilIntervalKm}
               onSelectVehicle={handleSelectVehicleFromGarage}
               onAddVehicle={handleAddVehicle}
               onDeleteVehicle={handleDeleteVehicle}

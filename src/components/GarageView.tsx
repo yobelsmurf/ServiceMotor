@@ -17,6 +17,7 @@ import {
 interface GarageViewProps {
   vehicles: GarageVehicle[];
   activeVehicleId: string | null;
+  oilIntervalKm?: number;
   onSelectVehicle: (vehicle: GarageVehicle) => void;
   onAddVehicle: (vehicle: GarageVehicle) => void;
   onDeleteVehicle: (id: string) => void;
@@ -27,6 +28,7 @@ interface GarageViewProps {
 export const GarageView: React.FC<GarageViewProps> = ({
   vehicles,
   activeVehicleId,
+  oilIntervalKm = 2000,
   onSelectVehicle,
   onAddVehicle,
   onDeleteVehicle,
@@ -219,7 +221,8 @@ export const GarageView: React.FC<GarageViewProps> = ({
             const recs = calculateMaintenanceRecommendations({
               currentKm: v.currentKm,
               motorcycleType: v.type,
-              hasRadiator: model?.hasRadiator ?? false
+              hasRadiator: model?.hasRadiator ?? false,
+              oilIntervalKm
             });
 
             const dueNow = recs.filter(r => r.isDueNow);
